@@ -1,0 +1,229 @@
+<%- include('../templates/header') %>
+
+<div class="container mt-4">
+    <h2>Gestión de Dispositivos</h2>
+    
+    <!-- Botón para agregar nuevo dispositivo -->
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#agregarDispositivoModal">
+        Nuevo Dispositivo
+    </button>
+
+    <!-- Tabla de dispositivos -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Cliente</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% devices.forEach(function(device) { %>
+                    <tr>
+                        <td><%= device.idDevice %></td>
+                        <td><%= device.marca %></td>
+                        <td><%= device.modelo %></td>
+                        <td><%= device.nombreCliente %></td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="editarDispositivo('<%= device.idDevice %>')">
+                                Editar
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="eliminarDispositivo('<%= device.idDevice %>')">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Agregar Dispositivo -->
+<div class="modal fade" id="agregarDispositivoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nuevo Dispositivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAgregarDispositivo">
+                    <div class="mb-3">
+                        <label for="idCliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="idCliente" name="idCliente" required>
+                            <option value="">Seleccione un cliente</option>
+                            <% clientes.forEach(function(cliente) { %>
+                                <option value="<%= cliente.idCliente %>"><%= cliente.descripcion %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="marca" class="form-label">Marca</label>
+                        <input type="text" class="form-control" id="marca" name="marca" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modelo" class="form-label">Modelo</label>
+                        <input type="text" class="form-control" id="modelo" name="modelo" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarDispositivo()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Dispositivo -->
+<div class="modal fade" id="editarDispositivoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Dispositivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarDispositivo">
+                    <input type="hidden" id="editId">
+                    <div class="mb-3">
+                        <label for="editIdCliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="editIdCliente" name="idCliente" required>
+                            <option value="">Seleccione un cliente</option>
+                            <% clientes.forEach(function(cliente) { %>
+                                <option value="<%= cliente.idCliente %>"><%= cliente.descripcion %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editMarca" class="form-label">Marca</label>
+                        <input type="text" class="form-control" id="editMarca" name="marca" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editModelo" class="form-label">Modelo</label>
+                        <input type="text" class="form-control" id="editModelo" name="modelo" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarDispositivo()">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function guardarDispositivo() {
+    const formData = {
+        idCliente: document.getElementById('idCliente').value,
+        marca: document.getElementById('marca').value,
+        modelo: document.getElementById('modelo').value
+    };
+
+    try {
+        const response = await fetch('/api/dispositivos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert(data.message);
+            window.location.href = '/dispositivos';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al crear el dispositivo: ' + error.message);
+    }
+}
+
+async function editarDispositivo(id) {
+    try {
+        const response = await fetch(`/api/dispositivos/${id}`);
+        const result = await response.json();
+        
+        if (response.ok) {
+            const data = result.data;
+            document.getElementById('editId').value = id;
+            document.getElementById('editIdCliente').value = data.idCliente;
+            document.getElementById('editMarca').value = data.marca;
+            document.getElementById('editModelo').value = data.modelo;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editarDispositivoModal'));
+            modal.show();
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al obtener los datos del dispositivo: ' + error.message);
+    }
+}
+
+async function actualizarDispositivo() {
+    const id = document.getElementById('editId').value;
+    const formData = {
+        idCliente: document.getElementById('editIdCliente').value,
+        marca: document.getElementById('editMarca').value,
+        modelo: document.getElementById('editModelo').value
+    };
+
+    try {
+        const response = await fetch(`/api/dispositivos/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(data.message);
+            window.location.href = '/dispositivos';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al actualizar el dispositivo: ' + error.message);
+    }
+}
+
+async function eliminarDispositivo(id) {
+    if (confirm('¿Está seguro de que desea eliminar este dispositivo?')) {
+        try {
+            const response = await fetch(`/api/dispositivos/${id}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+                window.location.href = '/dispositivos';
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al eliminar el dispositivo: ' + error.message);
+        }
+    }
+}
+</script>
+
+<%- include('../templates/footer') %>

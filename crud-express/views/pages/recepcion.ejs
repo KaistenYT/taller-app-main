@@ -1,0 +1,265 @@
+<%- include('../templates/header') %>
+
+<div class="container mt-4">
+    <h2>Gestión de Recepciones</h2>
+    
+    <!-- Botón para agregar nueva recepción -->
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#agregarRecepcionModal">
+        Nueva Recepción
+    </button>
+
+    <!-- Tabla de recepciones -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Estado</th>
+                    <th>Falla</th>
+                    <th>Observación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% recepciones.forEach(function(recepcion) { %>
+                    <tr>
+                        <td><%= recepcion.idRecepcion %></td>
+                        <td><%= new Date(recepcion.fechaRecibido).toLocaleDateString() %></td>
+                        <td><%= recepcion.nombreCliente %></td>
+                        <td><%= recepcion.marcaDispositivo %></td>
+                        <td><%= recepcion.modeloDispositivo %></td>
+                        <td><%= recepcion.estado %></td>
+                        <td><%= recepcion.falla %></td>
+                        <td><%= recepcion.observacion %></td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="editarRecepcion('<%= recepcion.idRecepcion %>')">
+                                Editar
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="eliminarRecepcion('<%= recepcion.idRecepcion %>')">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Agregar Recepción -->
+<div class="modal fade" id="agregarRecepcionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva Recepción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAgregarRecepcion">
+                    <div class="mb-3">
+                        <label for="idCliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="idCliente" name="idCliente" required>
+                            <option value="">Seleccione un cliente</option>
+                            <% clientes.forEach(function(cliente) { %>
+                                <option value="<%= cliente.idCliente %>"><%= cliente.descripcion %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="idDevice" class="form-label">Dispositivo</label>
+                        <select class="form-select" id="idDevice" name="idDevice" required>
+                            <option value="">Seleccione un Dispositivo</option>
+                            <% dispositivos.forEach(function(dispositivo) { %>
+                                <option value="<%= dispositivo.idDevice %>"><%= dispositivo.marca %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Completado">Completado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="falla" class="form-label">Falla</label>
+                        <textarea class="form-control" id="falla" name="falla" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observacion" class="form-label">Observación</label>
+                        <textarea class="form-control" id="observacion" name="observacion"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarRecepcion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Recepción -->
+<div class="modal fade" id="editarRecepcionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Recepción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarRecepcion">
+                    <input type="hidden" id="editId">
+                    <div class="mb-3">
+                        <label for="editIdCliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="editIdCliente" name="idCliente" required>
+                            <option value="">Seleccione un cliente</option>
+                            <% clientes.forEach(function(cliente) { %>
+                                <option value="<%= cliente.idCliente %>"><%= cliente.descripcion %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEstado" class="form-label">Estado</label>
+                        <select class="form-select" id="editEstado" name="estado" required>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Completado">Completado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFalla" class="form-label">Falla</label>
+                        <textarea class="form-control" id="editFalla" name="falla" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editObservacion" class="form-label">Observación</label>
+                        <textarea class="form-control" id="editObservacion" name="observacion"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarRecepcion()">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function guardarRecepcion() {
+    const formData = {
+        idCliente: document.getElementById('idCliente').value,
+        idDevice: document.getElementById('idDevice').value,
+        estado: document.getElementById('estado').value,
+        falla: document.getElementById('falla').value,
+        observacion: document.getElementById('observacion').value
+    };
+
+    try {
+        const response = await fetch('/api/recepciones', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert(data.message);
+            window.location.href = '/recepciones';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al crear la recepción: ' + error.message);
+    }
+}
+
+async function editarRecepcion(id) {
+    try {
+        const response = await fetch(`/api/recepciones/${id}`);
+        const result = await response.json();
+        
+        if (response.ok) {
+            const data = result.data;
+            document.getElementById('editId').value = id;
+            document.getElementById('editIdCliente').value = data.idCliente;
+            document.getElementById('editEstado').value = data.estado;
+            document.getElementById('editFalla').value = data.falla;
+            document.getElementById('editObservacion').value = data.observacion;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editarRecepcionModal'));
+            modal.show();
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al obtener los datos de la recepción: ' + error.message);
+    }
+}
+
+async function actualizarRecepcion() {
+    const id = document.getElementById('editId').value;
+    const formData = {
+        idCliente: document.getElementById('editIdCliente').value,
+        estado: document.getElementById('editEstado').value,
+        falla: document.getElementById('editFalla').value,
+        observacion: document.getElementById('editObservacion').value
+    };
+
+    try {
+        const response = await fetch(`/api/recepciones/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(data.message);
+            window.location.href = '/recepciones';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al actualizar la recepción: ' + error.message);
+    }
+}
+
+async function eliminarRecepcion(id) {
+    if (confirm('¿Está seguro de que desea eliminar esta recepción?')) {
+        try {
+            const response = await fetch(`/api/recepciones/${id}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+                window.location.href = '/recepciones';
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al eliminar la recepción: ' + error.message);
+        }
+    }
+}
+</script>
+
+<%- include('../templates/footer') %>
