@@ -108,4 +108,17 @@ export class ClientController {
             });
         }
     }
+
+    static async getRecepcionesByCliente(req, res) {
+        try {
+            const recepciones = await Client.getRecepcionesByCliente(req.params.id);
+            return res.json(recepciones);
+        } catch (error) {
+            console.error('Error al obtener las recepciones del cliente:', error);
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Error al obtener las recepciones del cliente' 
+            });
+        }
+    }
 }

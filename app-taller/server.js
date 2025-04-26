@@ -4,6 +4,7 @@ import cors from 'cors';
 import clientRouter from './routes/ClientRouter.js';
 import recepcionRouter from './routes/recepcionRoutes.js';
 import deviceRouter from './routes/deviceRoutes.js';
+import serviceRouter from './routes/serviceRouter.js';
 
 async function startServer() {
   const app = express();
@@ -21,6 +22,7 @@ async function startServer() {
   app.use('/api/clientes', clientRouter);
   app.use('/api/recepciones', recepcionRouter);
   app.use('/api/dispositivos', deviceRouter);
+  app.use('/api/servicios', serviceRouter);
 
   // Ruta principal
   app.get('/', (req, res) => {
@@ -31,6 +33,7 @@ async function startServer() {
   app.use('/clientes', clientRouter);
   app.use('/recepciones', recepcionRouter);
   app.use('/dispositivos', deviceRouter);
+  app.use('/servicios', serviceRouter);
 
   // Manejo de errores
   app.use((err, req, res, next) => {

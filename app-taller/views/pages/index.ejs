@@ -1,0 +1,102 @@
+<%- include('../templates/header') %>
+    <style>
+        .card-link {
+            text-decoration: none;
+            color: inherit; /* Hereda el color del texto del padre */
+            display: block; /* Hace que el enlace ocupe todo el espacio de la tarjeta */
+            height: 100%;
+        }
+
+        .card-link:hover {
+            background-color: rgba(0, 0, 0, 0.05); /* Ligero fondo al pasar el ratón */
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .btn-icon-start {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-icon-start i {
+            margin-right: 0.5em;
+        }
+    </style>
+</head>
+<body>
+  
+    <div class="container mt-4">
+        <h1 class="mb-4">Panel de Gestión</h1>
+        <p class="lead">Bienvenido al sistema de gestión de tu taller. Accede rápidamente a las diferentes secciones:</p>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col">
+                <div class="card h-100">
+                    <a href="/clientes" class="card-link">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-people me-2"></i> Clientes</h5>
+                            <p class="card-text">Gestiona la información detallada de tus clientes, incluyendo datos personales, historial de servicios y más.</p>
+                            <button class="btn btn-primary btn-sm mt-2 btn-icon-start">
+                                <i class="bi bi-people"></i> Ir a Clientes
+                            </button>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <a href="/dispositivos" class="card-link">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-laptop me-2"></i> Dispositivos</h5>
+                            <p class="card-text">Administra el inventario de equipos y dispositivos, registra sus características, estados y asignaciones.</p>
+                            <button class="btn btn-success btn-sm mt-2 btn-icon-start">
+                                <i class="bi bi-laptop"></i> Ir a Dispositivos
+                            </button>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <a href="/recepciones" class="card-link">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-receipt me-2"></i> Recepciones</h5>
+                            <p class="card-text">Controla el proceso de recepción de equipos, registra la información del cliente, el dispositivo y el motivo de la recepción.</p>
+                            <button class="btn btn-danger btn-sm mt-2 btn-icon-start">
+                                <i class="bi bi-clipboard-check"></i> Ir a Recepciones
+                            </button>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <a href="/servicios" class="card-link">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-wrench me-2"></i> Servicios</h5>
+                            <p class="card-text">Gestiona los servicios realizados a los equipos, asigna técnicos, registra el progreso y genera informes.</p>
+                            <button class="btn btn-warning btn-sm mt-2 btn-icon-start">
+                                <i class="bi bi-wrench"></i> Ir a Servicios
+                            </button>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            </div>
+    </div>
+
+    
+</body>
+
+<%- include('../templates/footer') %>
+</html>
+

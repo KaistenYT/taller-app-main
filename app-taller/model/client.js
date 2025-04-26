@@ -25,6 +25,10 @@ class Client {
    static async deleteClient(id){
     return await db('cliente').where('idCliente', Number(id)).del();
    }
+
+   static async getRecepcionesByCliente(id){
+    return await db('recepcion').where('idCliente', Number(id)).select('*');
+   }
 }
 
 export default Client;

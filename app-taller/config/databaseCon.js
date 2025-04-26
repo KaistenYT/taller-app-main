@@ -59,10 +59,28 @@ async function createReceptionTable() {
     }
 }
 
+// Crear la tabla servicio
+async function createServiceTable() {
+    const exists = await db.schema.hasTable('servicio');
+    if (!exists) {
+        await db.schema.createTable('servicio', (table) => {
+            table.increments('idServicio').primary();
+            table.string('descripcion');
+            table.integer('idRecepcion').notNullable();
+            table.foreign('idRecepcion').references('recepcion.idRecepcion');
+        })
+
+
+
+    }
+    
+}
+
 async function createInitialTables() {
     await createClientTable();
     await createDeviceTable();
     await createReceptionTable();
+    await createServiceTable();
     console.log("All tables created");
 }
 
