@@ -18,7 +18,13 @@ async function startServer() {
   // Configuración de vistas
   app.set('view engine', 'ejs');
 
-  // Rutas API (deben ir antes de las rutas de vistas)
+  // API Middleware to force JSON responses
+  app.use('/api', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    next();
+  });
+
+  // Rutas API
   app.use('/api/clientes', clientRouter);
   app.use('/api/recepciones', recepcionRouter);
   app.use('/api/dispositivos', deviceRouter);
@@ -39,15 +45,14 @@ async function startServer() {
   app.use((err, req, res, next) => {
     console.error(err.stack);
     if (req.path.startsWith('/api/')) {
-      res.status(500).json({ 
+      return res.status(500).json({ 
         success: false,
         error: 'Error interno del servidor' 
       });
-    } else {
-      res.status(500).render('pages/error', { 
-        error: 'Error interno del servidor' 
-      });
     }
+    res.status(500).render('pages/error', { 
+      error: 'Error interno del servidor' 
+    });
   });
 
   app.listen(port, () => {

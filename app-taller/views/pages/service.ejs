@@ -1,5 +1,292 @@
 <%- include('../templates/header') %>
 
+<!-- Agregar JS de Bootstrap -->
 
+
+<div class="container mt-4">
+    <h2>Gestion de servicios</h2>
+
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#agregarServicioModal">
+        Nueva Servicio
+    </button>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Recepción</th>
+                    <th>descripcion</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="serviciosTableBody">
+                <% servicios.forEach(function(servicio) { %>
+                    <tr>
+                        <td><%= servicio.idServicio %></td>
+                        <td><%= servicio.idRecepcion %></td>
+                        <td><%= servicio.descripcion %></td>
+                        <td>
+                            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editarServicioModal" onclick="editarServicio('<%= servicio.idServicio %>')">
+                                Editar
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="eliminarServicio('<%= servicio.idServicio %>')">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="agregarServicioModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Servicio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAgregarServicio">
+                    <div class="mb-3">
+                        <label for="idRecepcion" class="form-label">Recepción</label>
+                        <select class="form-select" id="idRecepcion" name="idRecepcion" required>
+                            <option value="">Seleccione una recepción</option>
+                            <% recepciones.forEach(function(recepcion) { %>
+                                <option value="<%= recepcion.idRecepcion %>"><%= recepcion.idRecepcion %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarServicio()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editarServicioModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Servicio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarServicio">
+                    <input type="hidden" id="editId">
+                    <div class="mb-3">
+                        <label for="editIdRecepcion" class="form-label">Recepción</label>
+                        <select class="form-select" id="editIdRecepcion" name="idRecepcion" required>
+                            <option value="">Seleccione una recepción</option>
+                            <% recepciones.forEach(function(recepcion) { %>
+                                <option value="<%= recepcion.idRecepcion %>"><%= recepcion.idRecepcion %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="editDescripcion" name="descripcion" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarServicio()">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function guardarServicio() {
+    const formData = {
+        idRecepcion: document.getElementById('idRecepcion').value,
+        descripcion: document.getElementById('descripcion').value
+    };
+
+    try {
+        const response = await fetch('/api/servicios', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert('Servicio guardado correctamente');
+            document.getElementById('formAgregarServicio').reset();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('agregarServicioModal'));
+            modal.hide();
+            location.reload();
+        } else {
+            alert('Error al guardar el servicio');
+        }
+    } catch (error) {
+        console.error('Error al guardar el servicio:', error);
+        alert('Error al guardar el servicio');
+    }
+}
+
+async function actualizarServicio() {
+    try {
+        const formData = {
+            idRecepcion: document.getElementById('editIdRecepcion').value,
+            descripcion: document.getElementById('editDescripcion').value
+        };
+        
+        const id = document.getElementById('editId').value;
+        console.log('Enviando actualización para servicio ID:', id, 'datos:', formData);
+        
+        const response = await fetch(`/api/servicios/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        console.log('Resultado de actualización:', result);
+        
+        if (result.success) {
+            alert('Servicio actualizado correctamente');
+            location.reload();
+        } else {
+            throw new Error(result.error || 'Error desconocido al actualizar');
+        }
+        
+    } catch (error) {
+        console.error('Error en actualizarServicio:', error);
+        alert(`Error al actualizar: ${error.message}`);
+    }
+}
+
+async function eliminarServicio(id) {
+    try {
+        const response = await fetch(`/api/servicios/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            alert('Servicio eliminado correctamente');
+            location.reload();
+        } else {
+            alert('Error al eliminar el servicio');
+        }
+    } catch (error) {
+        console.error('Error al eliminar el servicio:', error);
+        alert('Error al eliminar el servicio');
+    }
+}
+
+async function editarServicio(id) {
+    console.log('Iniciando edición de servicio ID:', id);
+    try {
+        const response = await fetch(`/api/servicios/${id}`);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Datos completos recibidos:', JSON.stringify(data));
+        
+        // Verificar existencia de elementos
+        const editIdEl = document.getElementById('editId');
+        const editRecepcionEl = document.getElementById('editIdRecepcion');
+        const editDescEl = document.getElementById('editDescripcion');
+        
+        console.log('Elementos encontrados:', {
+            editId: !!editIdEl,
+            editRecepcion: !!editRecepcionEl,
+            editDescripcion: !!editDescEl
+        });
+        
+        if (!editIdEl || !editRecepcionEl || !editDescEl) {
+            throw new Error('No se encontraron todos los elementos del formulario');
+        }
+        
+        // Asignar valores
+        const servicioData = data.data || data; // Compatibilidad con ambos formatos
+        editIdEl.value = servicioData.idServicio || servicioData.id || '';
+        editRecepcionEl.value = servicioData.idRecepcion || '';
+        editDescEl.value = servicioData.descripcion || '';
+        
+        console.log('Valores asignados:', {
+            id: editIdEl.value,
+            recepcion: editRecepcionEl.value,
+            descripcion: editDescEl.value
+        });
+        
+        const modal = new bootstrap.Modal(document.getElementById('editarServicioModal'));
+        modal.show();
+        
+    } catch (error) {
+        console.error('Error completo:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+async function cargarRecepciones() {
+    try {
+        const response = await fetch('/api/recepciones');
+        const { data: recepciones } = await response.json();
+        const select = document.getElementById('idRecepcion');
+        select.innerHTML = '';
+        recepciones.forEach(recepcion => {
+            const option = document.createElement('option');
+            option.value = recepcion.idRecepcion;
+            option.textContent = recepcion.idRecepcion;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error al cargar las recepciones:', error);
+        alert('Error al cargar las recepciones');
+    }
+}
+
+async function cargarServicios() {
+    try {
+        const response = await fetch('/api/servicios');
+        const { data: servicios } = await response.json();
+        const tableBody = document.getElementById('serviciosTableBody');
+        tableBody.innerHTML = '';
+        servicios.forEach(servicio => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${servicio.idServicio}</td>
+                <td>${servicio.idRecepcion}</td>
+                <td>${servicio.descripcion}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editarServicioModal" onclick="editarServicio('${servicio.idServicio}')">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="eliminarServicio('${servicio.idServicio}')">Eliminar</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error al cargar los servicios:', error);
+        alert('Error al cargar los servicios');
+    }
+}
+
+</script>
 
 <%- include('../templates/footer') %>

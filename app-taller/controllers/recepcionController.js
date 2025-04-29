@@ -5,8 +5,6 @@ export class RecepcionController {
     static async getAllRecepciones(req, res) {
         try {
             const recepciones = await Recepcion.getAll();
-            const clientes = await Client.getAll();
-            const dispositivos = await Device.getAll();
             
             if (req.path.startsWith('/api/')) {
                 return res.json({
@@ -14,6 +12,10 @@ export class RecepcionController {
                     data: recepciones
                 });
             }
+            
+            // Only load these for non-API requests
+            const clientes = await Client.getAll();
+            const dispositivos = await Device.getAll();
             res.render('pages/recepcion', { recepciones, clientes, dispositivos });
         } catch (error) {
             console.error('Error al obtener las recepciones:', error);

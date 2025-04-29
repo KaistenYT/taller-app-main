@@ -14,6 +14,15 @@ class Service{
         return this.getById(id);
     }
 
+    static async update(id, serviceData) {
+        return await db('servicio')
+            .where('idServicio', Number(id))
+            .update({
+                idRecepcion: serviceData.idRecepcion,
+                descripcion: serviceData.descripcion
+            });
+    }
+
     static async updateService(id, service){
         const result = await db('servicio').where('idServicio', Number(id)).update(service);
         if (result > 0) {
