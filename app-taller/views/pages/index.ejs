@@ -1,35 +1,64 @@
 <%- include('../templates/header') %>
-    <style>
-        .card-link {
-            text-decoration: none;
-            color: inherit; /* Hereda el color del texto del padre */
-            display: block; /* Hace que el enlace ocupe todo el espacio de la tarjeta */
-            height: 100%;
-        }
+<style>
+    /* Estilos para el enlace de la tarjeta (card-link) */
+    .card-link {
+        text-decoration: none; /* Elimina el subrayado del enlace */
+        color: inherit; /* Hereda el color del texto del elemento padre */
+        display: block; /* Hace que el enlace ocupe todo el espacio de la tarjeta */
+        height: 100%; /* Asegura que el enlace ocupe toda la altura de la tarjeta */
+    }
 
-        .card-link:hover {
-            background-color: rgba(0, 0, 0, 0.05); /* Ligero fondo al pasar el ratón */
-        }
+    .card-link:hover {
+        background-color: rgba(0, 0, 0, 0.05); /* Ligero fondo al pasar el ratón para indicar interactividad */
+    }
 
-        .card-body {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-        }
+    /* Estilos para el cuerpo de la tarjeta (card-body) */
+    .card-body {
+        display: flex; /* Utiliza flexbox para la distribución interna */
+        flex-direction: column; /* Organiza los elementos en columna */
+        justify-content: space-between; /* Distribuye el espacio entre los elementos */
+        height: 100%; /* Asegura que el cuerpo de la tarjeta ocupe toda la altura disponible */
+    }
 
-        .btn-icon-start {
-            display: inline-flex;
-            align-items: center;
-        }
+    /* Estilos para botones con icono al inicio (btn-icon-start) */
+    .btn-icon-start {
+        display: inline-flex; /* Permite que el icono y el texto estén en línea con flexbox */
+        align-items: center; /* Centra verticalmente el icono y el texto */
+    }
 
-        .btn-icon-start i {
-            margin-right: 0.5em;
-        }
-    </style>
+    .btn-icon-start i {
+        margin-right: 0.5em; /* Espacio a la derecha del icono */
+    }
+
+    /* Clases de colores personalizados para los botones */
+    .color-blue {
+        background-color: #00F9E1;
+    }
+    .color-blue:hover {
+        background-color: #12c5b3;
+    }
+    .color-yellow {
+        background-color: #FFFF00;
+    }
+    .color-yellow:hover {
+        background-color: #ccaf09;
+    }
+    .color-fuchsia {
+        background-color: #F0047F;
+    }
+    .color-fuchsia:hover {
+        background-color: #d107a9;
+    }
+    .color-platinum {
+        background-color: #E1E0DA;
+    }
+    .color-platinum:hover {
+        background-color: #d1d1d1;
+    }
+</style>
 </head>
 <body>
-  
+
     <div class="container mt-4">
         <h1 class="mb-4">Panel de Gestión</h1>
         <p class="lead">Bienvenido al sistema de gestión de tu taller. Accede rápidamente a las diferentes secciones:</p>
@@ -41,7 +70,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><i class="bi bi-people me-2"></i> Clientes</h5>
                             <p class="card-text">Gestiona la información detallada de tus clientes, incluyendo datos personales, historial de servicios y más.</p>
-                            <button class="btn btn-primary btn-sm mt-2 btn-icon-start">
+                            <button class="btn color-blue btn-sm mt-2 btn-icon-start">
                                 <i class="bi bi-people"></i> Ir a Clientes
                             </button>
                         </div>
@@ -55,7 +84,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><i class="bi bi-laptop me-2"></i> Dispositivos</h5>
                             <p class="card-text">Administra el inventario de equipos y dispositivos, registra sus características, estados y asignaciones.</p>
-                            <button class="btn btn-success btn-sm mt-2 btn-icon-start">
+                            <button class="btn color-yellow btn-sm mt-2 btn-icon-start">
                                 <i class="bi bi-laptop"></i> Ir a Dispositivos
                             </button>
                         </div>
@@ -69,7 +98,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><i class="bi bi-receipt me-2"></i> Recepciones</h5>
                             <p class="card-text">Controla el proceso de recepción de equipos, registra la información del cliente, el dispositivo y el motivo de la recepción.</p>
-                            <button class="btn btn-danger btn-sm mt-2 btn-icon-start">
+                            <button class="btn color-fuchsia btn-sm mt-2 btn-icon-start">
                                 <i class="bi bi-clipboard-check"></i> Ir a Recepciones
                             </button>
                         </div>
@@ -83,7 +112,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><i class="bi bi-wrench me-2"></i> Servicios</h5>
                             <p class="card-text">Gestiona los servicios realizados a los equipos, asigna técnicos, registra el progreso y genera informes.</p>
-                            <button class="btn btn-warning btn-sm mt-2 btn-icon-start">
+                            <button class="btn color-platinum btn-sm mt-2 btn-icon-start">
                                 <i class="bi bi-wrench"></i> Ir a Servicios
                             </button>
                         </div>
@@ -91,12 +120,7 @@
                 </div>
             </div>
 
-            </div>
-    </div>
+        </div> </div> </body>
 
-    
-</body>
 
-<%- include('../templates/footer') %>
 </html>
-
